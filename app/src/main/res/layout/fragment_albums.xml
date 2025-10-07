@@ -10,27 +10,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Título de la App -->
-        <TextView
-            android:id="@+id/text_app_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Music App"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#212121"
-            android:paddingBottom="16dp"/>
-
-        <!-- Sección Álbumes -->
         <TextView
             android:id="@+id/text_albums_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Álbumes"
-            android:textSize="22sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="#212121"
-            android:paddingBottom="8dp"/>
+            android:paddingBottom="16dp"/>
 
         <!-- Card Álbum 1 -->
         <LinearLayout
@@ -40,7 +28,7 @@
             android:padding="8dp"
             android:background="@drawable/card_background"
             android:gravity="center_vertical"
-            android:marginBottom="8dp">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:layout_width="80dp"
@@ -68,47 +56,50 @@
                     android:layout_height="wrap_content"
                     android:text="Artista"
                     android:textSize="14sp"
-                    android:textColor="#757575"/>
+                    android:textColor="#757575"
+                    android:paddingTop="4dp"/>
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Sección Canciones -->
-        <TextView
-            android:id="@+id/text_songs_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Canciones"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#212121"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp"/>
-
-        <!-- Card Canción 1 -->
+        <!-- Card Álbum 2 -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="120dp"
             android:orientation="horizontal"
             android:padding="8dp"
             android:background="@drawable/card_background"
             android:gravity="center_vertical"
-            android:marginBottom="8dp">
+            android:layout_marginBottom="12dp">
 
-            <TextView
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_album_placeholder"/>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Nombre de la canción"
-                android:textSize="16sp"
-                android:textColor="#212121"
-                android:textStyle="bold"/>
+                android:orientation="vertical"
+                android:paddingStart="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3:45"
-                android:textSize="14sp"
-                android:textColor="#757575"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre del Álbum 2"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#212121"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Artista 2"
+                    android:textSize="14sp"
+                    android:textColor="#757575"
+                    android:paddingTop="4dp"/>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
