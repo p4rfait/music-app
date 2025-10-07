@@ -3,23 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_music">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.p4rfait.musicapp.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
+        android:id="@+id/navigation_music"
+        android:name="com.p4rfait.musicapp.ui.MusicFragment"
+        android:label="@string/title_music"
+        tools:layout="@layout/fragment_music" />
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.p4rfait.musicapp.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
+        android:id="@+id/navigation_album"
+        android:name="com.p4rfait.musicapp.ui.AlbumFragment"
+        android:label="@string/title_album"
+        tools:layout="@layout/fragment_album" />
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.p4rfait.musicapp.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_artist"
+        android:name="com.p4rfait.musicapp.ui.ArtistFragment"
+        android:label="@string/title_artist"
+        tools:layout="@layout/fragment_artist" />
 </navigation>
