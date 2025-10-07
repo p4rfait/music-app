@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Music App</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="albums_title">Álbumes</string>
+    <string name="songs_title">Canciones</string>
 </resources>
