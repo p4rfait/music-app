@@ -1,60 +1,155 @@
 package com.p4rfait.musicapp.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.p4rfait.musicapp.R
+import com.p4rfait.musicapp.data.Album
+import com.p4rfait.musicapp.data.Artist
+import com.p4rfait.musicapp.data.Song
+import com.p4rfait.musicapp.databinding.FragmentMusicBinding
+import com.p4rfait.musicapp.ui.common.SongAdapter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MusicFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MusicFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentMusicBinding? = null
+    private val binding get() = _binding!!
+
+    private val db by lazy { FirebaseFirestore.getInstance() }
+    private var songsReg: ListenerRegistration? = null
+    private var albumsReg: ListenerRegistration? = null
+    private var artistsReg: ListenerRegistration? = null
+
+    private val allSongs = mutableListOf<Song>()
+    private val artistNameById = mutableMapOf<String, String>()
+    private val albumTitleById = mutableMapOf<String, String>()
+
+    private val adapter by lazy {
+        SongAdapter(
+            albumTitleOf = { id -> albumTitleById[id] ?: "" },
+            artistNameOf = { id -> artistNameById[id] ?: "" }
+        )
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentMusicBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.songRecycler.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@MusicFragment.adapter
+            setHasFixedSize(true)
         }
+
+        binding.addSongFab.setOnClickListener {
+            findNavController().navigate(R.id.action_music_to_editSong)
+        }
+
+        binding.songSearchEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { applyFilter(s?.toString()) }
+        })
+
+        listenArtists()
+        listenAlbums()
+        listenSongs()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_music, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AlbumFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MusicFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun listenArtists() {
+        artistsReg?.remove()
+        artistsReg = db.collection("artists")
+            .orderBy("name", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                val b = _binding ?: return@addSnapshotListener
+                if (e != null) {
+                    Snackbar.make(b.root, getString(R.string.generic_error, e.message), Snackbar.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
+                artistNameById.clear()
+                snapshot?.documents?.forEach { d ->
+                    val obj = d.toObject(Artist::class.java)
+                    if (obj != null) artistNameById[d.id] = obj.name
+                }
+                applyFilter(b.songSearchEdit.text?.toString())
             }
+    }
+
+    private fun listenAlbums() {
+        albumsReg?.remove()
+        albumsReg = db.collection("albums")
+            .orderBy("title", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                val b = _binding ?: return@addSnapshotListener
+                if (e != null) {
+                    Snackbar.make(b.root, getString(R.string.generic_error, e.message), Snackbar.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+                albumTitleById.clear()
+                snapshot?.documents?.forEach { d ->
+                    val obj = d.toObject(Album::class.java)
+                    if (obj != null) albumTitleById[d.id] = obj.title
+                }
+                applyFilter(b.songSearchEdit.text?.toString())
+            }
+    }
+
+    private fun listenSongs() {
+        songsReg?.remove()
+        songsReg = db.collection("songs")
+            .orderBy("title", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                val b = _binding ?: return@addSnapshotListener
+                if (e != null) {
+                    Snackbar.make(b.root, getString(R.string.generic_error, e.message), Snackbar.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+                allSongs.clear()
+                snapshot?.documents?.forEach { d ->
+                    val obj = d.toObject(Song::class.java)
+                    if (obj != null) {
+                        val item = Song(
+                            id = d.id,
+                            title = obj.title,
+                            durationSec = obj.durationSec,
+                            albumId = obj.albumId,
+                            artistId = obj.artistId
+                        )
+                        allSongs.add(item)
+                    }
+                }
+                applyFilter(b.songSearchEdit.text?.toString())
+            }
+    }
+
+    private fun applyFilter(query: String?) {
+        val q = query?.trim()?.lowercase().orEmpty()
+        val list = if (q.isBlank()) allSongs else allSongs.filter { s ->
+            s.title.lowercase().contains(q) ||
+                    s.durationSec.toString().contains(q) ||
+                    albumTitleById[s.albumId].orEmpty().lowercase().contains(q) ||
+                    artistNameById[s.artistId].orEmpty().lowercase().contains(q)
+        }
+        adapter.submitList(list.toList())
+    }
+
+    override fun onDestroyView() {
+        songsReg?.remove(); songsReg = null
+        albumsReg?.remove(); albumsReg = null
+        artistsReg?.remove(); artistsReg = null
+        _binding = null
+        super.onDestroyView()
     }
 }

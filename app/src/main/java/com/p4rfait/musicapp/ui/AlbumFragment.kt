@@ -1,60 +1,134 @@
 package com.p4rfait.musicapp.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.p4rfait.musicapp.R
+import com.p4rfait.musicapp.data.Album
+import com.p4rfait.musicapp.data.Artist
+import com.p4rfait.musicapp.databinding.FragmentAlbumBinding
+import com.p4rfait.musicapp.ui.common.AlbumAdapter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AlbumFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AlbumFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentAlbumBinding? = null
+    private val binding get() = _binding!!
+
+    private val db by lazy { FirebaseFirestore.getInstance() }
+    private var albumsReg: ListenerRegistration? = null
+    private var artistsReg: ListenerRegistration? = null
+
+    private val allAlbums = mutableListOf<Album>()
+    private val artistNameById = mutableMapOf<String, String>()
+
+    private val adapter by lazy {
+        AlbumAdapter(artistNameOf = { id -> artistNameById[id] ?: "" })
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentAlbumBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.albumRecycler.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@AlbumFragment.adapter
+            setHasFixedSize(true)
         }
+
+        binding.addAlbumFab.setOnClickListener {
+            findNavController().navigate(R.id.action_album_to_editAlbum)
+        }
+
+        binding.albumSearchEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { applyFilter(s?.toString()) }
+        })
+
+        listenArtists()
+        listenAlbums()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_album, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AlbumFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AlbumFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun listenArtists() {
+        artistsReg?.remove()
+        artistsReg = db.collection("artists")
+            .orderBy("name", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                val b = _binding ?: return@addSnapshotListener
+                if (e != null) {
+                    Snackbar.make(b.root, getString(R.string.generic_error, e.message), Snackbar.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
+                artistNameById.clear()
+                snapshot?.documents?.forEach { d ->
+                    val obj = d.toObject(Artist::class.java)
+                    if (obj != null) {
+                        artistNameById[d.id] = obj.name
+                    }
+                }
+                applyFilter(b.albumSearchEdit.text?.toString())
             }
+    }
+
+    private fun listenAlbums() {
+        albumsReg?.remove()
+        albumsReg = db.collection("albums")
+            .orderBy("title", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                val b = _binding ?: return@addSnapshotListener
+                if (e != null) {
+                    Snackbar.make(b.root, getString(R.string.generic_error, e.message), Snackbar.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
+                allAlbums.clear()
+                snapshot?.documents?.forEach { d ->
+                    val obj = d.toObject(Album::class.java)
+                    if (obj != null) {
+                        val item = Album(
+                            id = d.id,
+                            title = obj.title,
+                            year = obj.year,
+                            artistId = obj.artistId
+                        )
+                        allAlbums.add(item)
+                    }
+                }
+                applyFilter(b.albumSearchEdit.text?.toString())
+            }
+    }
+
+    private fun applyFilter(query: String?) {
+        val q = query?.trim()?.lowercase().orEmpty()
+        val list = if (q.isBlank()) {
+            allAlbums
+        } else {
+            allAlbums.filter { a ->
+                a.title.lowercase().contains(q) ||
+                        a.year.toString().contains(q) ||
+                        artistNameById[a.artistId].orEmpty().lowercase().contains(q)
+            }
+        }
+        adapter.submitList(list.toList())
+    }
+
+    override fun onDestroyView() {
+        albumsReg?.remove()
+        albumsReg = null
+        artistsReg?.remove()
+        artistsReg = null
+        _binding = null
+        super.onDestroyView()
     }
 }

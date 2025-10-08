@@ -3,21 +3,54 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_music">
+    app:startDestination="@id/musicFragment">
 
     <fragment
-        android:id="@+id/navigation_music"
+        android:id="@+id/musicFragment"
         android:name="com.p4rfait.musicapp.ui.MusicFragment"
         android:label="@string/title_music"
-        tools:layout="@layout/fragment_music" />
+        tools:layout="@layout/fragment_music">
+        <action
+            android:id="@+id/action_music_to_editSong"
+            app:destination="@id/editSongFragment" />
+    </fragment>
+
     <fragment
-        android:id="@+id/navigation_album"
+        android:id="@+id/albumFragment"
         android:name="com.p4rfait.musicapp.ui.AlbumFragment"
         android:label="@string/title_album"
-        tools:layout="@layout/fragment_album" />
+        tools:layout="@layout/fragment_album">
+        <action
+            android:id="@+id/action_album_to_editAlbum"
+            app:destination="@id/editAlbumFragment" />
+    </fragment>
+
     <fragment
-        android:id="@+id/navigation_artist"
+        android:id="@+id/artistFragment"
         android:name="com.p4rfait.musicapp.ui.ArtistFragment"
         android:label="@string/title_artist"
-        tools:layout="@layout/fragment_artist" />
+        tools:layout="@layout/fragment_artist">
+        <action
+            android:id="@+id/action_artist_to_editArtist"
+            app:destination="@id/editArtistFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editSongFragment"
+        android:name="com.p4rfait.musicapp.ui.EditSongFragment"
+        android:label="@string/title_music"
+        tools:layout="@layout/fragment_edit_song" />
+
+    <fragment
+        android:id="@+id/editAlbumFragment"
+        android:name="com.p4rfait.musicapp.ui.EditAlbumFragment"
+        android:label="@string/title_album"
+        tools:layout="@layout/fragment_edit_album" />
+
+    <fragment
+        android:id="@+id/editArtistFragment"
+        android:name="com.p4rfait.musicapp.ui.EditArtistFragment"
+        android:label="@string/artist_name"
+        tools:layout="@layout/fragment_edit_artist" />
+
 </navigation>
