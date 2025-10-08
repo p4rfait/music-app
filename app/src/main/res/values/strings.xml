@@ -1,6 +1,33 @@
 <resources>
     <string name="app_name">Music App</string>
+
     <string name="title_music">Canciones</string>
     <string name="title_album">Albumes</string>
     <string name="title_artist">Artistas</string>
+
+    <string name="search_song">Buscar cancion</string>
+    <string name="search_album">Buscar album</string>
+    <string name="search_artist">Buscar artista</string>
+
+    <string name="add_song">Agregar cancion</string>
+    <string name="add_album">Agregar album</string>
+    <string name="add_artist">Agregar artista</string>
+
+    <string name="album_sub">%1$d • %2$s</string>
+    <string name="song_sub">%1$ds • %2$s • %3$s</string>
+
+    <string name="validate_fields">Revisa los campos</string>
+    <string name="generic_error">Error: %1$s</string>
+
+    <string name="save">Guardar</string>
+    <string name="saved">Guardado</string>
+
+    <string name="artist_name">Nombre de artista</string>
+    <string name="country">Pais</string>
+
+    <string name="album_name">Nombre de album</string>
+    <string name="album_release_year">Año de lanzamiento</string>
+
+    <string name="song_name">Nombre de cancion</string>
+    <string name="song_duration_sec">Duracion de cancion (segundos)</string>
 </resources>
