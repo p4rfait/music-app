@@ -3,4 +3,9 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+<<<<<<< HEAD
+    <string name="title_artists">Artists</string>
+    <string name="search_hint">Search artists...</string>
+=======
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
 </resources>

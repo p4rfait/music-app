@@ -9,7 +9,21 @@
         android:id="@+id/navigation_home"
         android:name="com.p4rfait.musicapp.ui.home.HomeFragment"
         android:label="@string/title_home"
+<<<<<<< HEAD
+        tools:layout="@layout/fragment_home">
+    <action
+        android:id="@+id/action_home_to_artists"
+        app:destination="@id/navigation_artists" />
+</fragment>
+
+    <fragment
+        android:id="@+id/navigation_artists"
+        android:name="com.p4rfait.musicapp.ui.home.ArtistsFragment"
+        android:label="@string/title_artists"
+        tools:layout="@layout/activity_artists" />
+=======
         tools:layout="@layout/fragment_home" />
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
 
     <fragment
         android:id="@+id/navigation_dashboard"
