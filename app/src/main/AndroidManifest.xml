@@ -21,10 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
         <activity
             android:name=".ui.home.ArtistDetailActivity"
             android:exported="false">
         </activity>
+=======
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
     </application>
 
 </manifest>

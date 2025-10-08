@@ -15,4 +15,8 @@
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_notifications" />
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
 </menu>

@@ -13,6 +13,10 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+<<<<<<< HEAD
+=======
+
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -34,7 +38,10 @@ android {
     }
     buildFeatures {
         viewBinding = true
+<<<<<<< HEAD
         dataBinding = true
+=======
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
     }
 }
 
@@ -48,7 +55,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+<<<<<<< HEAD
     implementation(libs.androidx.recyclerview)
+=======
+>>>>>>> 74fc9fcd8601c12b6a8cf6b7685e813debfc4e4b
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
